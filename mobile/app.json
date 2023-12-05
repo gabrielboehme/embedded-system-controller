@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Device Config Controller App",
-    "slug": "snack-d3a296ef-f0d0-48a5-a464-3c60eb7c7c63",
+    "name": "projeto-final",
+    "slug": "snack-ff15e4c9-8738-443c-90a6-31f21a22f204",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,6 +26,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "Final project from college discipline Embbeded and Mobile Systems.\n"
+    "description": "Embarcados\n"
   }
 }

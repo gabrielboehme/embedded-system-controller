@@ -3,9 +3,9 @@ import { Text, TextInput, View, StyleSheet, Button } from 'react-native';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Alert } from 'react-native';
 
-const URL = 'https://5fbe-2804-4d98-244-d800-c12-cd01-191c-75e6.ngrok-free.app'
+const URL = 'https://769d-2801-84-1-2080-a047-b7b1-f4ad-349.ngrok-free.app'
 
-export default class DeviceEditView extends React.Component {
+export default class DeviceLogsView extends React.Component {
   static navigationOptions = {
     title: "Edit Device",
   };
@@ -36,12 +36,9 @@ export default class DeviceEditView extends React.Component {
   //   // });
   // }
 
-  componentWillUnmount() {
-    this.focusListener.remove();
-  }
 
   handleSave = async () => {
-    const url = URL + '/configs/' + this.state.deviceId;
+    const url = URL + '/controller/configs/' + this.state.deviceId;
     console.log("SAVE: ", url)
     try {
       const response = await fetch(url, {
@@ -74,7 +71,7 @@ export default class DeviceEditView extends React.Component {
   };
 
   loadDevice = async () => {
-    const url = URL + '/configs/' + this.state.deviceId;
+    const url = URL + '/controller/configs/' + this.state.deviceId;
     console.log("LOAD:", url);
     try {
       const response = await fetch(url, {
@@ -100,55 +97,56 @@ export default class DeviceEditView extends React.Component {
     }
   };
 
-  render() {
-    console.log(this.state);
-    const cooldown = this.state.device.cooldown
-    const targetRest = this.state.device.targetRest
-    const targetFinal = this.state.device.targetFinal
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.container}>
-            <Text>Edit Device Fields:</Text>
+   render() {
 
-            <Text style={styles.inputTitle}>Cooldown duration:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => this.setState(prevState => ({
-                  device: {
-                    ...prevState.device,
-                    cooldown: text,
-                  },
-                }))}
-                value={this.state.device.cooldown.toString()}
-                keyboardType="numeric"
-            />
-            <Text style={styles.inputTitle}>Target Rest:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => this.setState(prevState => ({
-                  device: {
-                    ...prevState.device,
-                    targetRest: text,
-                  },
-                }))}
-                value={this.state.device.targetRest.toString()}
-                keyboardType="numeric"
-            />
-            <Text style={styles.inputTitle}>Target Final:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => this.setState(prevState => ({
-                  device: {
-                    ...prevState.device,
-                    targetFinal: text,
-                  },
-                }))}
-                value={this.state.device.targetFinal.toString()}
-                keyboardType="numeric"
-            />
-            <Button title="Save" onPress={this.handleSave} />
-          </View>
-        </TouchableWithoutFeedback>
+    const { navigate } = this.props.navigation;
+
+     console.log(this.state);
+    return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <Text>Edit Device Fields:</Text>
+          
+          <Text style={styles.inputTitle}>Cooldown duration:</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => this.setState(prevState => ({
+              device: {
+                ...prevState.device,
+                cooldown: text,
+              },
+            }))}
+            value={this.state.device.cooldown.toString()}
+            keyboardType="numeric"
+          />
+          <Text style={styles.inputTitle}>Target Rest:</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => this.setState(prevState => ({
+              device: {
+                ...prevState.device,
+                targetRest: text,
+              },
+            }))}
+            value={this.state.device.targetRest.toString()}
+            keyboardType="numeric"
+          />
+          <Text style={styles.inputTitle}>Target Final:</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => this.setState(prevState => ({
+              device: {
+                ...prevState.device,
+                targetFinal: text,
+              },
+            }))}
+            value={this.state.device.targetFinal.toString()}
+            keyboardType="numeric"
+          />
+          <Button title="Save" onPress={this.handleSave} />
+          <Button title="See device logs" onPress={() => navigate('DeviceLogs', { deviceId: this.state.deviceId })}/>
+        </View>
+      </TouchableWithoutFeedback>
 
     );
   }
