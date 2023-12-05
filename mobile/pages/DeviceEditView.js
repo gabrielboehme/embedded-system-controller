@@ -1,5 +1,9 @@
 import * as React from 'react';
 import { Text, TextInput, View, StyleSheet, Button } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Alert } from 'react-native';
+
+const URL = 'https://5fbe-2804-4d98-244-d800-c12-cd01-191c-75e6.ngrok-free.app'
 
 export default class DeviceEditView extends React.Component {
   static navigationOptions = {
@@ -10,78 +14,83 @@ export default class DeviceEditView extends React.Component {
     super(props);
     this.state = {
       isLoading: true,
-      device_id: props.navigation.getParam('deviceConfig').device_id, // Initialize the parks array in the state
+      deviceId: this.props.navigation.getParam('deviceId'),
       device: {
         cooldown: 0,
-        targetStart: 50,
-        targetFinal: 180
+        targetRest: 50,
+        targetFinal: 180,
       }
     };
     this.loadDevice = this.loadDevice.bind(this);
+    this.loadDevice();
   }
 
-  componentDidMount() {
-    const { navigation } = this.props;
+  // componentDidMount() {
+  //   // const { navigation } = this.props;
 
-    this.focusListener = navigation.addListener('didFocus', () => {
-      // Only fetch devices if the array is empty
-      if (this.state.device_id == null) {
-        this.loadDevice();
-      }
-    });
-  }
+  //   // this.focusListener = navigation.addListener('didFocus', () => {
+  //   //   // Only fetch devices if the array is empty
+  //   //   // if (this.state.device_id == null) {
+  //   //     // this.loadDevice();
+  //   //   // }
+  //   // });
+  // }
 
   componentWillUnmount() {
     this.focusListener.remove();
   }
 
   handleSave = async () => {
-    const { cooldown, targetFinal, targetStart } = this.state;
-
+    const url = URL + '/configs/' + this.state.deviceId;
+    console.log("SAVE: ", url)
     try {
-      const response = await fetch('API_ENDPOINT_HERE', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           // Add any additional headers if required
         },
         body: JSON.stringify({
-          cooldown: cooldown,
-          target_final: targetFinal,
-          target_start: targetStart,
+          cooldown: parseInt(this.state.device.cooldown),
+          target_final: parseInt(this.state.device.targetFinal),
+          target_rest: parseInt(this.state.device.targetRest),
         }),
       });
 
       if (response.ok) {
         // Handle successful update
         console.log('Fields updated successfully');
+        Alert.alert('Success', 'Fields updated successfully');
       } else {
         // Handle error
+        console.log(response)
         console.error('Failed to update fields');
+        Alert.alert('Error', 'Failed to update fields: ' + response.status);
       }
     } catch (error) {
       console.error('Error updating fields:', error);
+      Alert.alert('Error', 'Error updating fields');
     }
   };
 
   loadDevice = async () => {
-    const { navigation } = this.props;
-    const URL = 'https://8ef8-2804-4d98-244-d800-51af-f44-1b3-97ab.ngrok-free.app/configs/' + navigation.state.device_id;
+    const url = URL + '/configs/' + this.state.deviceId;
+    console.log("LOAD:", url);
     try {
-      const response = await fetch(URL, {
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': "*"
         },
       });
-        const data = await response.json();
-        console.log('SUCCESS');
+      const data = await response.json();
+      console.log('SUCCESS');
       this.setState({
         isLoading: false,
         device: {
           cooldown: data.cooldown,
-          targetStart: data.target_start,
+          targetRest: data.target_rest,
           targetFinal: data.target_final,
         },
       });
@@ -91,30 +100,56 @@ export default class DeviceEditView extends React.Component {
     }
   };
 
-   render() {
+  render() {
+    console.log(this.state);
+    const cooldown = this.state.device.cooldown
+    const targetRest = this.state.device.targetRest
+    const targetFinal = this.state.device.targetFinal
     return (
-      <View style={styles.container}>
-        <Text>Edit Device Fields:</Text>
-        <TextInput
-          style={styles.input}
-          value={this.state.device.cooldown}
-          onChangeText={(text) => this.setState({ cooldown: text })}
-          placeholder="Cooldown"
-        />
-        <TextInput
-          style={styles.input}
-          value={this.state.device.targetFinal}
-          onChangeText={(text) => this.setState({ targetFinal: text })}
-          placeholder="Target Final"
-        />
-        <TextInput
-          style={styles.input}
-          value={this.state.device.targetStart}
-          onChangeText={(text) => this.setState({ targetStart: text })}
-          placeholder="Target Start"
-        />
-        <Button title="Save" onPress={this.handleSave} />
-      </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            <Text>Edit Device Fields:</Text>
+
+            <Text style={styles.inputTitle}>Cooldown duration:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={(text) => this.setState(prevState => ({
+                  device: {
+                    ...prevState.device,
+                    cooldown: text,
+                  },
+                }))}
+                value={this.state.device.cooldown.toString()}
+                keyboardType="numeric"
+            />
+            <Text style={styles.inputTitle}>Target Rest:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={(text) => this.setState(prevState => ({
+                  device: {
+                    ...prevState.device,
+                    targetRest: text,
+                  },
+                }))}
+                value={this.state.device.targetRest.toString()}
+                keyboardType="numeric"
+            />
+            <Text style={styles.inputTitle}>Target Final:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={(text) => this.setState(prevState => ({
+                  device: {
+                    ...prevState.device,
+                    targetFinal: text,
+                  },
+                }))}
+                value={this.state.device.targetFinal.toString()}
+                keyboardType="numeric"
+            />
+            <Button title="Save" onPress={this.handleSave} />
+          </View>
+        </TouchableWithoutFeedback>
+
     );
   }
 }
@@ -127,10 +162,22 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
+    color: 'black',
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
     marginBottom: 10,
     width: '100%',
+    height: 40,
+    margin: 12,
   },
+  inputTitle: {
+    color: 'black',
+    borderWidth: 3,
+    borderColor: 'transparent',
+    padding: 0,
+    marginBottom: 0,
+    width: '100%',
+    marginTop: 15,
+  }
 });
