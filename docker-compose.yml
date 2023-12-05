@@ -38,23 +38,23 @@ services:
     depends_on:
       - db
 
-#  logger-app:
-#      environment:
-#        - DB_HOST=db
-#        - DB_PORT=5432
-#        - DB_USER=admin
-#        - DB_PWD=db
-#        - DB_NAME=embedded-db
-#        - DB_SSL=disable
-#        - APP_PORT=8000
-#        - DEPLOYMENT=PROD
-#      build:
-#        context: ./services/logger          # Use the current directory as the build context
-#        dockerfile: Dockerfile  # Dockerfile for building the Go application
-#      networks:
-#        - std-net
-#      depends_on:
-#        - db
+  logger-app:
+      environment:
+        - DB_HOST=db
+        - DB_PORT=5432
+        - DB_USER=admin
+        - DB_PWD=db
+        - DB_NAME=embedded-db
+        - DB_SSL=disable
+        - APP_PORT=8000
+        - DEPLOYMENT=PROD
+      build:
+        context: ./services/logger          # Use the current directory as the build context
+        dockerfile: Dockerfile  # Dockerfile for building the Go application
+      networks:
+        - std-net
+      depends_on:
+        - db
 
   db:
     image: postgres:latest
