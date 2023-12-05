@@ -16,12 +16,16 @@ var DB *gorm.DB
 
 type DeviceConfig struct {
 	ID          *uuid.UUID `gorm:"unique;not null;default:gen_random_uuid()" json:"id"`
-	DeviceId    *uuid.UUID `gorm:"type:uuid;primaryKey; uniqueIndex; not null; default:gen_random_uuid()" json:"serial_number"`
+	DeviceId    *uuid.UUID `gorm:"type:uuid;primaryKey; uniqueIndex; not null; default:gen_random_uuid()" json:"device_id"`
 	TargetRest  *int       `json:"target_rest"`
 	TargetFinal *int       `json:"target_final"`
 	CoolDown    *int       `json:"cooldown"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
+}
+
+type DeviceIDResponse struct {
+	DeviceID *uuid.UUID `json:"device_id"`
 }
 
 func InitDB(dataSourceName string) error {

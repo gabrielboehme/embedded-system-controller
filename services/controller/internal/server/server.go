@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterRoutes(router *mux.Router) {
+	router.HandleFunc("/configs", api.GetConfigs).Methods("GET")
 	router.HandleFunc("/configs/{device_id}", api.GetConfig).Methods("GET")
 	// Routes with path variables
 	router.HandleFunc("/configs", api.CreateConfig).Methods("POST")

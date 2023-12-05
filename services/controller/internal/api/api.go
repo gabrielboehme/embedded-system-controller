@@ -20,6 +20,25 @@ func GetConfig(w http.ResponseWriter, r *http.Request) {
 	processors.RespondJSON(w, http.StatusOK, deviceConfig)
 }
 
+func GetConfigs(w http.ResponseWriter, r *http.Request) {
+	// Fetch all devices
+	devices := []model.DeviceConfig{}
+	model.DB.Find(&devices)
+
+	// Create a slice to store only device IDs
+	deviceIDs := make([]model.DeviceIDResponse, 0)
+
+	// Populate deviceIDs with device IDs from devices
+	for _, device := range devices {
+		deviceIDs = append(deviceIDs, model.DeviceIDResponse{
+			DeviceID: device.DeviceId,
+		})
+	}
+
+	// Respond with only device IDs
+	processors.RespondJSON(w, http.StatusOK, deviceIDs)
+}
+
 func CreateConfig(w http.ResponseWriter, r *http.Request) {
 	deviceConfig := model.DeviceConfig{}
 
