@@ -68,9 +68,21 @@ func (c *DeviceConfig) ValidateData() error {
 }
 
 func (c *DeviceConfig) UpdateDeviceConfig(deviceConfigUpdated *DeviceConfigUpdate) error {
-	if *deviceConfigUpdated.TargetRest > 50 || *deviceConfigUpdated.TargetRest < 0 {
-		return fmt.Errorf("target_rest must be between 0 and 50.")
+	if deviceConfigUpdated.TargetRest != nil {
+		if *deviceConfigUpdated.TargetRest > 50 || *deviceConfigUpdated.TargetRest < 0 {
+			return fmt.Errorf("target_rest must be between 0 and 50")
+		}
+		c.TargetRest = deviceConfigUpdated.TargetRest
 	}
+
+	if deviceConfigUpdated.TargetFinal != nil {
+		c.TargetFinal = deviceConfigUpdated.TargetFinal
+	}
+
+	if deviceConfigUpdated.CoolDown != nil {
+		c.CoolDown = deviceConfigUpdated.CoolDown
+	}
+
 	return nil
 }
 

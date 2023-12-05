@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
 	"net/http"
 )
 
@@ -60,7 +61,12 @@ func UpdateDeviceConfig(w http.ResponseWriter, r *http.Request) {
 		processors.RespondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	defer r.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			return
+		}
+	}(r.Body)
 
 	// Tries to update scooter
 	if err := deviceConfig.UpdateDeviceConfig(&configUpdated); err != nil {
