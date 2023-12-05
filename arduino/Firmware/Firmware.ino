@@ -5,17 +5,28 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 
-// Define the RFID pins and LEDs
-#define RFID_PIN_RST D8
-#define RFID_PIN_SDA D10
-#define RED_LED_PIN D6
-#define GREEN_LED_PIN D5
+// Define the pins and LEDs
+#define RED_LED_PIN D5
+#define GREEN_LED_PIN D6
 #define SERVO9G_PIN_SIG D3
-#define PIR_PIN_SIG 2
+#define PIR_PIN_SIG D2
 
 // Global variables and defines
-const int TARGET_REST = 90;    // Starting position
+const int TARGET_REST = 0;    // Starting position
 const int TARGET_FINAL = 180;  // Position when event is detected
+
+// WIFI Settings
+// Define your WiFi credentials
+
+// Define the endpoint URL
+const char* endpoint = "http://localhost:8000/controller"; // Replace with your API endpoint
+
+// Your struct definition
+struct YourStruct {
+  String key1;
+  String key2;
+  // Add more members as needed
+};
 
 // Object initialization
 Servo servo9g;
@@ -50,9 +61,10 @@ void loop() {
     servo9g.write(TARGET_REST);
     delay(100);
     servo9g.detach();
-
+    Serial.print(F("Val: ")); Serial.println(pir.read());
     // Check for motion
     if (pir.read()) {
+      
       digitalWrite(RED_LED_PIN, LOW);
       digitalWrite(GREEN_LED_PIN, HIGH);
 
@@ -60,11 +72,10 @@ void loop() {
       servo9g.write(TARGET_FINAL);
       delay(5000); // You might adjust the delay according to your preference
       servo9g.write(TARGET_REST);
-      delay(100);
       servo9g.detach();
     }
 
     // Delay for a short time to prevent rapid toggling
-    delay(100);  // Adjust this delay as needed
+    delay(200);  // Adjust this delay as needed
   }
 }
